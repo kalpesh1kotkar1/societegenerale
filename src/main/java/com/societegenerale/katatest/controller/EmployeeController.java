@@ -25,14 +25,20 @@ import com.societegenerale.katatest.exception.ResourceNotFoundException;
 import com.societegenerale.katatest.model.Employee;
 import com.societegenerale.katatest.repository.EmployeeRepository;
 
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This is controller .Used  for request mapping .
  * @author Kalpesh Kotkar
  *
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/version")
 public class EmployeeController {
+	
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EmployeeController.class);
 	
 	@Autowired
 	private EmployeeRepository employeeRepository;
@@ -45,6 +51,7 @@ public class EmployeeController {
 	 */
 	@GetMapping("/employee")
 	public List<Employee> getAllEmployees() {
+		log.info("inside getAllEmployees() method");
 		List<Employee> empList=employeeRepository.findAll();
 		List<Employee> sortedList = empList.stream()
 				.sorted(Comparator.comparing(Employee::getFirstName))
@@ -61,6 +68,7 @@ public class EmployeeController {
 	@GetMapping("/employees/{id}")
 	public ResponseEntity<Employee> getEmployeeById(
 			@PathVariable(value = "id") Long employeeId) throws ResourceNotFoundException {
+		log.info("inside getAllEmployees() method");
 		Employee employee = employeeRepository.findById(employeeId)
         .orElseThrow(() -> new ResourceNotFoundException("Employee not found :: " + employeeId));
 		return ResponseEntity.ok().body(employee);
@@ -73,6 +81,7 @@ public class EmployeeController {
 	 */
 	@PostMapping("/employees")
 	public Employee createEmployee(@Valid @RequestBody Employee employee) {
+		log.info("inside createEmployee() method");
 		return employeeRepository.save(employee);
 	}
 
@@ -87,6 +96,7 @@ public class EmployeeController {
 	public ResponseEntity<Employee> updateEmployee(
 			@PathVariable(value = "id") Long empId,
 			@Valid @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
+		log.info("inside updateEmployee() method");
 		Employee employee = employeeRepository.findById(empId)
 		        .orElseThrow(() -> new ResourceNotFoundException("Employee not found :: " + empId));
 		employee.setEmailId(employeeDetails.getEmailId());
@@ -108,6 +118,8 @@ public class EmployeeController {
 	@DeleteMapping("/employees/{id}")
 	public Map<String, Boolean> deleteEmployee(
 			@PathVariable(value = "id") Long empId) throws ResourceNotFoundException {
+		
+		log.info("inside deleteEmployee method");
 		Employee employee = employeeRepository.findById(empId)
 		        .orElseThrow(() -> new ResourceNotFoundException("Employee not found :: " + empId));
 		employeeRepository.delete(employee);
